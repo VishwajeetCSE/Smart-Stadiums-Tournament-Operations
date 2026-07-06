@@ -1,0 +1,22 @@
+{
+  "name": "fifa-stadiumos",
+  "version": "1.0.0",
+  "description": "FIFA World Cup 2026 - Smart Stadium & Tournament Operations Platform",
+  "main": "frontend/src/app.js",
+  "scripts": {
+    "test": "node tests/run_tests.js",
+    "lint": "npx eslint@8 ."
+  },
+  "keywords": [
+    "fifa-2026",
+    "smart-stadium",
+    "genai",
+    "accessibility",
+    "stadiumos"
+  ],
+  "author": "VishwajeetCSE",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA StadiumOS - AI Tournament Command Center</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Hidden accessibility skip link styling */
+        .skip-to-content {
+            position: absolute;
+            top: -120px;
+            left: 20px;
+            z-index: 10000;
+        }
+        .skip-to-content:focus {
+            top: 20px;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <a href="#main-content-anchor" class="skip-to-content btn btn-primary">Skip to main content</a>
+    <div class="glass-bg-glow"></div>
+    <div class="glass-bg-glow secondary"></div>
+
+    <div class="app-container" id="app-root-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i data-lucide="shield-alert" class="logo-icon text-emerald"></i>
+                <div class="logo-text">
+                    <span class="logo-title">StadiumOS</span>
+                    <span class="logo-badge">FIFA</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu" role="tablist" aria-label="Command Center Tabs">
+                <a href="#" class="nav-item active" data-tab="dashboard" id="tab-dashboard-btn" role="tab" aria-selected="true" aria-controls="tab-dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="operations" id="tab-operations-btn" role="tab" aria-selected="false" aria-controls="tab-operations">
+                    <i data-lucide="activity"></i>
+                    <span>Operations Command</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="crowd" id="tab-crowd-btn" role="tab" aria-selected="false" aria-controls="tab-crowd">
+                    <i data-lucide="users"></i>
+                    <span>Crowd & Transit</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="sustainability" id="tab-sustainability-btn" role="tab" aria-selected="false" aria-controls="tab-sustainability">
+                    <i data-lucide="leaf"></i>
+                    <span>Eco Sustainability</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="navigator" id="tab-navigator-btn" role="tab" aria-selected="false" aria-controls="tab-navigator">
+                    <i data-lucide="map"></i>
+                    <span>Stadium Navigator</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="assistant" id="tab-assistant-btn" role="tab" aria-selected="false" aria-controls="tab-assistant">
+                    <i data-lucide="bot"></i>
+                    <span>AI Assistant</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="role-selector-card">
+                    <label for="user-role-select" class="text-xs text-muted block mb-1">Active Command Role</label>
+                    <select id="user-role-select" class="form-control text-xs" onchange="changeUserRole(this.value)">
+                        <option value="Fan">Fan Mode</option>
+                        <option value="Volunteer">Volunteer Crew</option>
+                        <option value="Organizer">stadium Organizer</option>
+                    </select>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar"><i data-lucide="user"></i></div>
+                    <div class="user-info">
+                        <p class="user-name" id="user-name-display">Guest User</p>
+                        <p class="user-level" id="user-role-badge">Fan Mode</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Pane -->
+        <main class="main-content">
+            <div id="main-content-anchor" tabindex="-1" style="outline:none;"></div>
+
+            <!-- TAB 1: SUMMARY DASHBOARD -->
+            <section id="tab-dashboard" class="tab-panel active" role="tabpanel" aria-labelledby="tab-dashboard-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>FIFA StadiumOS Command Center</h1>
+                        <p class="subtitle">Real-time digital twin monitoring and incident command logistics.</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="live-clock" id="live-dashboard-clock">00:00:00 UTC</div>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- AI Digital Twin Explainer -->
+                    <div class="dashboard-card glass-card span-8 digital-twin-card">
+                        <div class="card-header-flex">
+                            <h3><i data-lucide="cpu" class="text-emerald"></i> AI Operations Digital Twin</h3>
+                            <span class="pulse-indicator active">LIVE SYNC</span>
+                        </div>
+                        <div class="twin-grid">
+                            <div class="twin-visualizer" id="twin-telemetry-nodes">
+                                <!-- Telemetry visualizer cards populated dynamically -->
+                            </div>
+                            <div class="twin-explanation-panel">
+                                <h4 class="text-xs uppercase tracking-wider text-muted">AI Operations Analyst</h4>
+                                <div class="twin-speech-bubble" id="twin-ai-recommendation">
+                                    Loading real-time stadium analytics...
+                                </div>
+                                <button class="btn btn-emerald btn-sm w-full mt-2" onclick="refreshDigitalTwin()">
+                                    <i data-lucide="refresh-cw"></i> Force AI Telemetry Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- World Cup Countdown & Match Day Details -->
+                    <div class="dashboard-card glass-card span-4 matchday-card">
+                        <h3>Match Day Timeline</h3>
+                        <div class="match-details-pill">
+                            <span class="flag-icon">🇺🇸</span>
+                            <strong>USA vs GERMANY</strong>
+                            <span class="flag-icon">🇩🇪</span>
+                        </div>
+                        <div class="timeline-ticks mt-4">
+                            <div class="timeline-item active">
+                                <div class="timeline-icon"><i data-lucide="key"></i></div>
+                                <div class="timeline-desc">
+                                    <p class="text-xs text-muted">Gates Opening</p>
+                                    <p class="text-sm font-bold">18:00 (In Progress)</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon"><i data-lucide="bus"></i></div>
+                                <div class="timeline-desc">
+                                    <p class="text-xs text-muted">Team Arrivals</p>
+                                    <p class="text-sm font-bold">19:30 (Scheduled)</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon"><i data-lucide="circle-play"></i></div>
+                                <div class="timeline-desc">
+                                    <p class="text-xs text-muted">Kickoff Countdown</p>
+                                    <p class="text-sm font-bold" id="kickoff-countdown">02h 30m 00s</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Widgets -->
+                    <div class="dashboard-card glass-card span-4 KPI-card">
+                        <div class="kpi-icon text-emerald"><i data-lucide="users"></i></div>
+                        <div class="kpi-data">
+                            <h4>Current Occupancy</h4>
+                            <h2 id="kpi-occupancy">0 / 60,000</h2>
+                            <p class="text-xs text-muted">Gates flow capacity normal.</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card glass-card span-4 KPI-card">
+                        <div class="kpi-icon text-coral"><i data-lucide="alert-triangle"></i></div>
+                        <div class="kpi-data">
+                            <h4>Active Incidents</h4>
+                            <h2 id="kpi-incidents">0 Incidents</h2>
+                            <p class="text-xs text-muted">Triaged by severity priority.</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card glass-card span-4 KPI-card">
+                        <div class="kpi-icon text-blue"><i data-lucide="clock"></i></div>
+                        <div class="kpi-data">
+                            <h4>Avg Gate Wait</h4>
+                            <h2 id="kpi-waittime">0 Mins</h2>
+                            <p class="text-xs text-muted">Simulated forecast available.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: OPERATIONS COMMAND -->
+            <section id="tab-operations" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-operations-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>AI Operations Commander</h1>
+                        <p class="subtitle">Log stadium incidents, deploy volunteer crews, and review security logs.</p>
+                    </div>
+                </header>
+
+                <div class="rbac-warning hidden" id="operations-access-denied">
+                    <div class="glass-card text-center p-8">
+                        <i data-lucide="lock" class="logo-icon text-coral mb-4" style="font-size: 48px;"></i>
+                        <h3>Access Restricted</h3>
+                        <p class="text-muted mt-2">Only Volunteers and Organizers can view the Operational Commander.</p>
+                        <p class="text-xs text-coral mt-1">Please select "Volunteer Crew" or "Stadium Organizer" in the sidebar selector.</p>
+                    </div>
+                </div>
+
+                <div class="operations-grid" id="operations-content-panel">
+                    <!-- AI Incident Logs -->
+                    <div class="dashboard-card glass-card span-8 operations-incident-board">
+                        <div class="card-header-flex mb-4">
+                            <h3>Active Incidents</h3>
+                            <button class="btn btn-primary btn-sm" id="report-incident-btn" onclick="openIncidentModal()">
+                                <i data-lucide="plus-circle"></i> Log New Incident
+                            </button>
+                        </div>
+                        <div class="incident-table-wrapper">
+                            <table class="table" id="incidents-log-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Location</th>
+                                        <th>Severity</th>
+                                        <th>Assigned Crew</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incidents-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- AI Dispatch SOP Dashboard -->
+                    <div class="dashboard-card glass-card span-4 dispatch-sop-panel">
+                        <h3>AI Incident Commander</h3>
+                        <div id="ai-sop-incident-detail">
+                            <div class="sidebar-placeholder">
+                                Select an active incident from the log table to review triaging details and generate emergency announcements.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Log Auditor -->
+                    <div class="dashboard-card glass-card span-12 security-audit-card">
+                        <div class="card-header-flex mb-4">
+                            <h3>Security Audit & Access Logs</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="clearSecurityLogs()">Clear Audit Log</button>
+                        </div>
+                        <div class="audit-log-table-wrapper">
+                            <table class="table log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Security Event</th>
+                                        <th>User Role</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="security-logs-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CROWD & TRANSIT -->
+            <section id="tab-crowd" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-crowd-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>Crowd Management & Transit Intelligence</h1>
+                        <p class="subtitle">Real-time gate telemetry, shuttle capacities, and queue forecasting.</p>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- Smart Queue Predictor -->
+                    <div class="dashboard-card glass-card span-6 queue-predictor-card">
+                        <h3>Smart Queue Predictor</h3>
+                        <p class="text-muted text-xs mb-4">Live queue wait times contrasted with predicted peak stadium times.</p>
+                        <div class="queue-list" id="concession-queue-list">
+                            <!-- Concession queues populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Transit Board -->
+                    <div class="dashboard-card glass-card span-6 transit-board-card">
+                        <h3>Transportation Telemetry</h3>
+                        <p class="text-muted text-xs mb-4">Shuttle lines, parking space availability, and metro connection updates.</p>
+                        <div class="transit-list" id="transit-status-list">
+                            <!-- Transit lists populated dynamically -->
+                        </div>
+                        <div class="parking-grid mt-4" id="parking-capacity-grid">
+                            <!-- Parking gauges populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: ECO SUSTAINABILITY -->
+            <section id="tab-sustainability" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-sustainability-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>Eco Sustainability Hub</h1>
+                        <p class="subtitle">Monitor stadium utilities, energy metrics, and AI recommendations to lower waste.</p>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- Sustainability Telemetry -->
+                    <div class="dashboard-card glass-card span-6 eco-telemetry-card">
+                        <h3>Utilities Telemetry</h3>
+                        <p class="text-muted text-xs mb-4 font-normal">Real-time consumption metrics across MetLife stadium.</p>
+                        <div class="eco-metrics-list" id="sustainability-metrics-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- AI Green Command Explainer -->
+                    <div class="dashboard-card glass-card span-6 eco-copilot-card">
+                        <h3>AI Green Command Copilot</h3>
+                        <p class="text-muted text-xs mb-4">Generative suggestions for reducing stadium carbon output.</p>
+                        <div class="twin-speech-bubble" id="sustainability-ai-tips">
+                            Analyzing utility consumption...
+                        </div>
+                        <button class="btn btn-emerald btn-sm w-full mt-4" onclick="generateEcoRecommendations()">
+                            <i data-lucide="leaf"></i> Fetch AI Waste Rerouting SOPs
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: STADIUM NAVIGATOR -->
+            <section id="tab-navigator" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-navigator-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>Stadium Indoor Navigator</h1>
+                        <p class="subtitle">Explore Azteca Stadium sectors and compute routing corridors.</p>
+                    </div>
+                </header>
+
+                <div class="navigation-layout">
+                    <!-- Map Canvas -->
+                    <div class="dashboard-card glass-card map-visualizer-card">
+                        <div class="card-header-flex">
+                            <h3>Live Arena Map</h3>
+                            <div class="map-controls">
+                                <label class="checkbox-label text-xs font-semibold mr-4">
+                                    <input type="checkbox" id="nav-vip-toggle" onchange="drawNavigationMap()"> VIP Access Corridors
+                                </label>
+                                <label class="checkbox-label text-xs font-semibold mr-4">
+                                    <input type="checkbox" id="nav-media-toggle" onchange="drawNavigationMap()"> Media Accreditation Areas
+                                </label>
+                                <label class="checkbox-label text-xs font-semibold">
+                                    <input type="checkbox" id="nav-accessible-toggle" onchange="drawNavigationMap()"> Accessible Step-free Ramps
+                                </label>
+                            </div>
+                        </div>
+                        <div class="stadium-map-container">
+                            <canvas id="stadium-map-canvas" width="600" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Nav Controls -->
+                    <div class="dashboard-card glass-card navigation-controls-card">
+                        <h3>Route Planner</h3>
+                        <div class="form-group mt-4">
+                            <label for="route-from-select">Starting Location</label>
+                            <select id="route-from-select" class="form-control" onchange="drawNavigationMap()">
+                                <option value="Gate A">Gate A Entrance</option>
+                                <option value="Gate B">Gate B Entrance</option>
+                                <option value="Gate C">Gate C Entrance</option>
+                                <option value="Gate D">Gate D (VIP Entry)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="route-to-select">Destination</label>
+                            <select id="route-to-select" class="form-control" onchange="drawNavigationMap()">
+                                <option value="Sector 108">Sector 108 Seats</option>
+                                <option value="Food Court A">Food Court A</option>
+                                <option value="Concourse B">Concourse B Restrooms</option>
+                                <option value="Media Room">Media Broadcasting Room</option>
+                            </select>
+                        </div>
+                        <div class="route-directions" id="route-instructions-box">
+                            Select origin and destination to output routing instructions.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: AI ASSISTANT -->
+            <section id="tab-assistant" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-assistant-btn">
+                <header class="panel-header">
+                    <div>
+                        <h1>AI Assistant & Multilingual Coach</h1>
+                        <p class="subtitle">Configure Gemini API integration, input keys, and chat with voice features.</p>
+                    </div>
+                </header>
+
+                <div class="assistant-layout">
+                    <!-- Config Box -->
+                    <div class="dashboard-card glass-card config-sidebar">
+                        <h3>System Configuration</h3>
+                        <p class="text-muted text-xs mb-4">Paste your Gemini API key to activate live reasoning capabilities.</p>
+                        
+                        <div class="form-group">
+                            <label for="gemini-key-input">Gemini API Key</label>
+                            <input type="password" class="form-control text-xs" id="gemini-key-input" placeholder="AIzaSy..." autocomplete="off">
+                            <p class="text-xs text-coral mt-1">⚠️ Warning: Demo only. Storing API keys client-side is never recommended in production environments.</p>
+                        </div>
+                        
+                        <button class="btn btn-emerald btn-sm w-full mb-4" onclick="saveGeminiSettings()">Save Key</button>
+                        <button class="btn btn-secondary btn-sm w-full" onclick="clearGeminiSettings()">Clear Key</button>
+
+                        <div class="settings-divider mt-6 mb-6"></div>
+
+                        <h3>Accessibility Settings</h3>
+                        <div class="form-group mt-2">
+                            <label for="accessibility-text-scale">Text Scaling</label>
+                            <div class="slider-row">
+                                <input type="range" id="accessibility-text-scale" min="100" max="150" value="100" step="5" onchange="updateAccessibilityPrefs()">
+                                <span id="text-scale-value">100%</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="accessibility-colorblind">Color-blind Filter Overlay</label>
+                            <select id="accessibility-colorblind" class="form-control text-xs" onchange="updateAccessibilityPrefs()">
+                                <option value="none">None (Standard Colors)</option>
+                                <option value="deuteranopia">Deuteranopia (Red-Green)</option>
+                                <option value="protanopia">Protanopia (Red-Green Weak)</option>
+                                <option value="tritanopia">Tritanopia (Blue-Yellow)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label class="checkbox-label text-xs font-semibold">
+                                <input type="checkbox" id="accessibility-high-contrast" onchange="updateAccessibilityPrefs()"> High Contrast Mode
+                            </label>
+                        </div>
+                        
+                        <div class="form-group mt-2">
+                            <label class="checkbox-label text-xs font-semibold">
+                                <input type="checkbox" id="accessibility-reduced-motion" onchange="updateAccessibilityPrefs()"> Reduced Motion Mode
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Chat Screen -->
+                    <div class="dashboard-card glass-card chatbot-main">
+                        <div class="chat-screen" id="assistant-chat-screen">
+                            <div class="chat-msg system-msg">
+                                <div class="msg-bubble">
+                                    Hello, I am the **FIFA StadiumOS Copilot**. 
+                                    Provide a Gemini API Key in the left panel to unlock live translations, emergency broadcasts, and routing analysis. 
+                                    Otherwise, I will resolve questions using local cached operations guides.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-bar">
+                            <button class="btn btn-secondary chat-mic-btn" id="voice-recognition-btn" title="Enable Voice Mode (STT)" onclick="toggleVoiceInput()">
+                                <i data-lucide="mic"></i>
+                            </button>
+                            <input type="text" class="chat-input-field" id="chat-query-input" placeholder="Ask about gate congestion, VIP routing, or concessions..." autocomplete="off">
+                            <button class="btn btn-emerald chat-send-btn" onclick="submitChatQuery()">
+                                <i data-lucide="send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- REPORT INCIDENT MODAL -->
+    <div id="incident-report-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content glass-card">
+            <h3 id="modal-title">Log New Incident</h3>
+            <p class="text-xs text-muted mb-4">Submit stadium incident details to initiate AI Triaging pipelines.</p>
+            <div id="modal-error-box" class="modal-error hidden"></div>
+            
+            <div class="form-group">
+                <label for="modal-incident-type">Incident Type</label>
+                <select id="modal-incident-type" class="form-control">
+                    <option value="Medical Emergency">Medical Emergency</option>
+                    <option value="Crowd Congestion">Crowd Congestion</option>
+                    <option value="Liquid Spill">Liquid Spill</option>
+                    <option value="Equipment Failure">Equipment Failure</option>
+                    <option value="Suspicious Activity">Suspicious Activity</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="modal-incident-location">Location / Sector</label>
+                <input type="text" id="modal-incident-location" class="form-control" placeholder="e.g. Gate B, Sector 108 Concourse" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="modal-incident-severity">Incident Severity</label>
+                <select id="modal-incident-severity" class="form-control">
+                    <option value="Low">Low (Minor cleanups / questions)</option>
+                    <option value="Medium">Medium (Minor congestion / equipment issues)</option>
+                    <option value="High">High (Medical help needed / security blockages)</option>
+                    <option value="Critical">Critical (Immediate evacuations / stadium threat)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="modal-incident-priority">Operational Priority</label>
+                <select id="modal-incident-priority" class="form-control">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+
+            <div class="modal-footer-buttons mt-6">
+                <button class="btn btn-secondary" onclick="closeIncidentModal()">Cancel</button>
+                <button class="btn btn-emerald" onclick="submitNewIncident()">Submit Log</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Announcement region -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Script Loads -->
+    <script src="src/state.js"></script>
+    <script src="src/security.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
