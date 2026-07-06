@@ -126,7 +126,88 @@ function generateLocalTwinExplanation(element) {
     logSecurityEvent('Offline Telemetry Analysis Run', window.appState.userRole, 'SUCCESS');
 }
 
+/**
+ * Simulates different phases of the Match Day, updating all sensor telemetry in state.
+ */
+function changeMatchPhase(phase) {
+    const telemetry = window.appState.telemetry;
+    
+    if (phase === 'Pre-Match') {
+        // High gate traffic, low concessions
+        telemetry.gates[0].currentOccupancy = 1380; telemetry.gates[0].status = 'Heavy'; telemetry.gates[0].queueTime = 19;
+        telemetry.gates[1].currentOccupancy = 1420; telemetry.gates[1].status = 'Heavy'; telemetry.gates[1].queueTime = 22;
+        telemetry.gates[2].currentOccupancy = 610; telemetry.gates[2].status = 'Normal'; telemetry.gates[2].queueTime = 5;
+        telemetry.gates[3].currentOccupancy = 150; telemetry.gates[3].status = 'Normal'; telemetry.gates[3].queueTime = 2;
+        
+        telemetry.concessions.forEach(c => { 
+            c.queueTime = Math.round(c.queueTime / 2) || 2; 
+            c.predictedQueue = Math.round(c.predictedQueue / 2) || 4; 
+            c.status = 'Normal'; 
+        });
+        telemetry.transit.shuttles[0].occupancy = '95%';
+        telemetry.transit.shuttles[1].occupancy = '80%';
+    } else if (phase === 'Mid-Match') {
+        // Empty gates, high concessions
+        telemetry.gates.forEach(g => { g.currentOccupancy = Math.round(g.capacity * 0.1); g.status = 'Normal'; g.queueTime = 1; });
+        
+        telemetry.concessions[0].queueTime = 22; telemetry.concessions[0].status = 'Heavy'; telemetry.concessions[0].predictedQueue = 30;
+        telemetry.concessions[1].queueTime = 28; telemetry.concessions[1].status = 'Heavy'; telemetry.concessions[1].predictedQueue = 35;
+        telemetry.concessions[2].queueTime = 12; telemetry.concessions[2].status = 'Moderate'; telemetry.concessions[2].predictedQueue = 15;
+        telemetry.concessions[3].queueTime = 15; telemetry.concessions[3].status = 'Moderate'; telemetry.concessions[3].predictedQueue = 18;
+        
+        telemetry.transit.shuttles[0].occupancy = '15%';
+        telemetry.transit.shuttles[1].occupancy = '10%';
+    } else if (phase === 'Post-Match') {
+        // High gate exits, empty concessions
+        telemetry.gates[0].currentOccupancy = 1480; telemetry.gates[0].status = 'Heavy'; telemetry.gates[0].queueTime = 25;
+        telemetry.gates[1].currentOccupancy = 1490; telemetry.gates[1].status = 'Heavy'; telemetry.gates[1].queueTime = 28;
+        telemetry.gates[2].currentOccupancy = 1450; telemetry.gates[2].status = 'Heavy'; telemetry.gates[2].queueTime = 24;
+        telemetry.gates[3].currentOccupancy = 480; telemetry.gates[3].status = 'Heavy'; telemetry.gates[3].queueTime = 10;
+        
+        telemetry.concessions.forEach(c => { c.queueTime = 1; c.predictedQueue = 1; c.status = 'Normal'; });
+        
+        telemetry.transit.shuttles[0].occupancy = '100% (Full)';
+        telemetry.transit.shuttles[1].occupancy = '100% (Full)';
+    } else if (phase === 'Evacuation') {
+        // Gates critical overflow, concessions closed
+        telemetry.gates.forEach(g => { g.currentOccupancy = g.capacity; g.status = 'Emergency'; g.queueTime = 40; });
+        telemetry.concessions.forEach(c => { c.queueTime = 0; c.predictedQueue = 0; c.status = 'Closed'; });
+        
+        // Log critical incident
+        const hasEvac = window.appState.incidents.some(i => i.type === 'Emergency Evacuation');
+        if (!hasEvac) {
+            const nextId = `INC-${1000 + window.appState.incidents.length + 1}`;
+            const evacInc = {
+                id: nextId,
+                type: 'Emergency Evacuation',
+                location: 'Entire Arena',
+                severity: 'Critical',
+                priority: 'High',
+                assignedVolunteers: 'All Available Crew (90+ Members)',
+                status: 'In Progress',
+                timeline: `${new Date().toLocaleTimeString()} Evacuation phase simulated.`,
+                suggestedResponse: 'Open all gates, trigger safety sirens, broadcast multilingual evacuation safety alerts immediately.',
+                estimatedRecovery: '2 Hours',
+                finalReport: null
+            };
+            window.appState.incidents.unshift(evacInc);
+            logSecurityEvent('Critical Evacuation Incident Logged', 'SYSTEM', 'WARNING');
+        }
+    }
+
+    logSecurityEvent(`Match phase changed to: ${phase}`, window.appState.userRole, 'SUCCESS');
+
+    // Refresh DOM panels
+    updateDigitalTwinDOM();
+    updateQueuesDOM();
+    updateTransportDOM();
+    
+    // Trigger AI Digital Twin explanation
+    refreshDigitalTwin();
+}
+
 // Exports
 window.updateDigitalTwinDOM = updateDigitalTwinDOM;
 window.updateQueuesDOM = updateQueuesDOM;
 window.refreshDigitalTwin = refreshDigitalTwin;
+window.changeMatchPhase = changeMatchPhase;

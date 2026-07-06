@@ -214,6 +214,14 @@ assert(mockWindow.sessionStorage.getItem('stadiumos_api_key') === 'test_gemini_k
 context.clearGeminiSettings();
 assert(mockWindow.sessionStorage.getItem('stadiumos_api_key') === null, "Gemini Key should be removed from sessionStorage");
 
+// 7. Match Day Simulation Workflows
+const changeMatchPhase = context.window.changeMatchPhase;
+assert(typeof changeMatchPhase === 'function', "changeMatchPhase should be a function");
+changeMatchPhase('Evacuation');
+assert(appState.telemetry.gates[0].status === 'Emergency', "Evacuation phase should mark gates as Emergency");
+assert(appState.incidents.length === 3, "Evacuation phase should automatically append emergency evacuation incident");
+
+
 console.log(`\n=== Test Summary: ${passCount}/${testCount} passed ===`);
 if (passCount !== testCount) {
     process.exit(1);

@@ -129,6 +129,15 @@
                     <!-- World Cup Countdown & Match Day Details -->
                     <div class="dashboard-card glass-card span-4 matchday-card">
                         <h3>Match Day Timeline</h3>
+                        <div class="form-group mt-2 mb-2">
+                             <label for="match-phase-select" class="text-xs text-muted block mb-1">Simulate Match Day Phase</label>
+                             <select id="match-phase-select" class="form-control text-xs" onchange="changeMatchPhase(this.value)">
+                                 <option value="Pre-Match">Pre-Match (Gate Arrivals)</option>
+                                 <option value="Mid-Match">During Match (Halftime Surge)</option>
+                                 <option value="Post-Match">Post-Match (Stadium Exit)</option>
+                                 <option value="Evacuation">Emergency Evacuation Drill</option>
+                             </select>
+                         </div>
                         <div class="match-details-pill">
                             <span class="flag-icon">🇺🇸</span>
                             <strong>USA vs GERMANY</strong>
