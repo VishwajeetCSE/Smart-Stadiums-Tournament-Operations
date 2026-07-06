@@ -51,6 +51,14 @@ FIFA StadiumOS bridges the gap by building an AI-powered operational overlay tha
 *   **Multilingual emergency announcer:** Instantly translates critical warnings into English, Spanish, French, Arabic, and Japanese.
 *   **Smart Indoor Map Canvas:** Draws responsive walking paths, accessible step-free lift paths, and restricts VIP/Media zones dynamically.
 
+## 📸 Screenshots
+
+### AI Operations Dashboard (Digital Twin & Telemetry)
+![Dashboard Mockup](frontend/assets/dashboard_mockup.png)
+
+### AI Incident Commander (Dispatch & Announcements)
+![Incident Commander Mockup](frontend/assets/incident_commander_mockup.png)
+
 ---
 
 ## 💻 Tech Stack
