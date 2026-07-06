@@ -221,6 +221,7 @@ h1 {
 .span-8 { grid-column: span 8; }
 .span-6 { grid-column: span 6; }
 .span-4 { grid-column: span 4; }
+.span-3 { grid-column: span 3; }
 
 /* Glass Card styling */
 .glass-card {
