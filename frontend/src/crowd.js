@@ -132,6 +132,9 @@ function generateLocalTwinExplanation(element) {
 function changeMatchPhase(phase) {
     const telemetry = window.appState.telemetry;
     
+    let transitRecommendation = 'Sensors stable. Telemetry shows standard traffic flow.';
+    let sustainabilityRecommendation = 'Utility matrices balanced. Energy conservation protocol normal.';
+
     if (phase === 'Pre-Match') {
         // High gate traffic, low concessions
         telemetry.gates[0].currentOccupancy = 1380; telemetry.gates[0].status = 'Heavy'; telemetry.gates[0].queueTime = 19;
@@ -146,6 +149,9 @@ function changeMatchPhase(phase) {
         });
         telemetry.transit.shuttles[0].occupancy = '95%';
         telemetry.transit.shuttles[1].occupancy = '80%';
+
+        transitRecommendation = 'Gate B is at 94% flow. Reroute Sector 108 arrivals to Gate C immediately. Dispatch 2 extra Metro shuttle buses.';
+        sustainabilityRecommendation = 'Solar generation is high (245 kW). Direct excess power to feed Gate A & B turnstile backup battery banks.';
     } else if (phase === 'Mid-Match') {
         // Empty gates, high concessions
         telemetry.gates.forEach(g => { g.currentOccupancy = Math.round(g.capacity * 0.1); g.status = 'Normal'; g.queueTime = 1; });
@@ -157,6 +163,9 @@ function changeMatchPhase(phase) {
         
         telemetry.transit.shuttles[0].occupancy = '15%';
         telemetry.transit.shuttles[1].occupancy = '10%';
+
+        transitRecommendation = 'Concessions wait time at Food Court B has reached 28 minutes. Deploy 3 volunteer crowd managers to organize the queue barrier.';
+        sustainabilityRecommendation = 'Concession zone power load is peak. Set corridor HVAC systems to Eco Mode (24°C) to prevent overload.';
     } else if (phase === 'Post-Match') {
         // High gate exits, empty concessions
         telemetry.gates[0].currentOccupancy = 1480; telemetry.gates[0].status = 'Heavy'; telemetry.gates[0].queueTime = 25;
@@ -168,6 +177,9 @@ function changeMatchPhase(phase) {
         
         telemetry.transit.shuttles[0].occupancy = '100% (Full)';
         telemetry.transit.shuttles[1].occupancy = '100% (Full)';
+
+        transitRecommendation = 'Egress load is critical at all gates. Dispatch all standby transit shuttles to exit loops. Activate VIP exit routes.';
+        sustainabilityRecommendation = 'Post-match waste accumulation starting. Activate volunteer cleanup shifts at Sector 100 recycling bin stations.';
     } else if (phase === 'Evacuation') {
         // Gates critical overflow, concessions closed
         telemetry.gates.forEach(g => { g.currentOccupancy = g.capacity; g.status = 'Emergency'; g.queueTime = 40; });
@@ -193,9 +205,18 @@ function changeMatchPhase(phase) {
             window.appState.incidents.unshift(evacInc);
             logSecurityEvent('Critical Evacuation Incident Logged', 'SYSTEM', 'WARNING');
         }
+
+        transitRecommendation = 'EMERGENCY EVACUATION: Open all gates. Command all shuttles and Metro links to run on continuous rescue loops.';
+        sustainabilityRecommendation = 'EMERGENCY PROTOCOL: Shutdown all non-essential concessions power grid. Direct emergency backup generator power strictly to safety lighting and sirens.';
     }
 
     logSecurityEvent(`Match phase changed to: ${phase}`, window.appState.userRole, 'SUCCESS');
+
+    // Update Action Recommendation Elements
+    const transitRecEl = document.getElementById('transit-ai-recommendation');
+    const sustainabilityRecEl = document.getElementById('sustainability-ai-recommendation');
+    if (transitRecEl) transitRecEl.textContent = transitRecommendation;
+    if (sustainabilityRecEl) sustainabilityRecEl.textContent = sustainabilityRecommendation;
 
     // Refresh DOM panels
     updateDigitalTwinDOM();
