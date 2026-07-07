@@ -128,6 +128,9 @@ function logSecurityEvent(event, user, status) {
     }
     // Dispatch update event
     document.dispatchEvent(new CustomEvent('securityLogUpdated'));
+    
+    // Save to localStorage automatically on state alterations
+    saveStateToLocalStorage();
 }
 
 /**

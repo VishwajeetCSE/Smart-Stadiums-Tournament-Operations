@@ -61,6 +61,7 @@ function clearSecurityLogs() {
         { timestamp: new Date().toISOString(), event: 'Audit log cleared', user: window.appState.userRole, status: 'SUCCESS' }
     ];
     updateSecurityLogsDOM();
+    window.saveStateToLocalStorage();
 }
 
 /**
