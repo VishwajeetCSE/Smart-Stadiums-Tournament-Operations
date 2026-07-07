@@ -113,12 +113,19 @@ Provide a 2-3 sentence strategic operations summary. Spot congestion, recommend 
  * Fallback local explainer logic for Digital Twin
  */
 function generateLocalTwinExplanation(element) {
-    let alertMsg = 'All stadium systems are stable. Fan entrances are flowing smoothly.';
-    const heavyGates = window.appState.telemetry.gates.filter(g => (g.currentOccupancy / g.capacity) >= 0.85);
-    
-    if (heavyGates.length > 0) {
-        const gateNames = heavyGates.map(g => g.id).join(' and ');
-        alertMsg = `⚠️ ALERT: **${gateNames}** has exceeded 85% flow capacity. Concession lines at Food Court B are rising. Deploying Sector Volunteers to redirect Sector 108 arrivals to Gate C. Estimated recovery: 15 minutes.`;
+    const phase = window.appState.matchPhase || 'Pre-Match';
+    let alertMsg = '';
+
+    if (phase === 'Pre-Match') {
+        alertMsg = '⚠️ **CONGESTION WARNING:** **Gate A and Gate B** have spiked to over 90% ingress flow due to pre-match fan arrivals. **AI Action:** Direct Gate A arrivals to Gate C (currently only 40% flow capacity) to equalize load and reduce average queue wait by 12 minutes. Deploy 4 volunteer stewards to Metro transit loops to speed up ticketing checks.';
+    } else if (phase === 'Mid-Match') {
+        alertMsg = '🍕 **CONCESSION SURGE:** Main gates are clear, but **Food Court B** queue wait times have surged to 28 minutes due to halftime concession runs. **AI Action:** Activate secondary mobile concession carts near Sector 108 to redirect traffic. Reroute 3 crowd supervisors to Food Court B to organize line barriers and keep passageways clear.';
+    } else if (phase === 'Post-Match') {
+        alertMsg = '🚍 **EGRESS PEAK:** All exit gates are experiencing heavy egress loads (1,400+ occupancy each) as fans depart. **AI Action:** Command Metro links and standby express shuttles to run continuously on loop. Reroute VIP exit flow to North Corridor loops to ease congestion at Gate A exits.';
+    } else if (phase === 'Evacuation') {
+        alertMsg = '🚨 **CRITICAL EVACUATION DETECTED:** Emergency phase active. All gates marked as Emergency. **AI Action:** Immediately activate all emergency safety lights and open all crash gates. Direct all 90+ safety crew members to exit nodes. Bypass all concession zones to avoid stampedes.';
+    } else {
+        alertMsg = 'All stadium systems are stable. Fan entrances are flowing smoothly.';
     }
     
     // Render with basic markdown bold support
@@ -130,6 +137,7 @@ function generateLocalTwinExplanation(element) {
  * Simulates different phases of the Match Day, updating all sensor telemetry in state.
  */
 function changeMatchPhase(phase) {
+    window.appState.matchPhase = phase;
     const telemetry = window.appState.telemetry;
     
     let transitRecommendation = 'Sensors stable. Telemetry shows standard traffic flow.';

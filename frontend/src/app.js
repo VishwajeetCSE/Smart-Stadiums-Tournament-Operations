@@ -180,3 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate Lucide Icons
     lucide.createIcons();
 });
+
+// Global Exports
+window.changeUserRole = changeUserRole;

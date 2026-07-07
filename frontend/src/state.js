@@ -7,6 +7,7 @@
 const DEFAULT_STATE = {
     userRole: 'Fan', // 'Fan', 'Volunteer', 'Organizer'
     activeTab: 'dashboard',
+    matchPhase: 'Pre-Match',
     
     // Accessibility Preferences
     accessibility: {
@@ -161,3 +162,10 @@ function loadStateFromLocalStorage() {
         logSecurityEvent('State load failed', 'SYSTEM', 'FAILED');
     }
 }
+
+// Global Exports
+window.getApiKey = getApiKey;
+window.setApiKey = setApiKey;
+window.saveStateToLocalStorage = saveStateToLocalStorage;
+window.loadStateFromLocalStorage = loadStateFromLocalStorage;
+window.logSecurityEvent = logSecurityEvent;

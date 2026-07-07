@@ -3,8 +3,6 @@
  * Processes logs, triages emergencies, and generates multilingual broadcasts using GenAI.
  */
 
-let selectedIncidentId = null;
-
 function updateIncidentsDOM() {
     const tableBody = document.getElementById('incidents-table-body');
     if (!tableBody) return;
@@ -12,7 +10,6 @@ function updateIncidentsDOM() {
     tableBody.innerHTML = '';
     window.appState.incidents.forEach(incident => {
         const isResolved = incident.status === 'Resolved';
-        const isHigh = incident.priority === 'High';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -70,7 +67,6 @@ function clearSecurityLogs() {
  * Inspection Panel updates
  */
 function inspectIncident(id) {
-    selectedIncidentId = id;
     const incident = window.appState.incidents.find(i => i.id === id);
     const detailPanel = document.getElementById('ai-sop-incident-detail');
     if (!incident || !detailPanel) return;
@@ -157,7 +153,6 @@ async function generateEmergencyBroadcast(id) {
     if (!detailPanel) return;
 
     // Loading overlay
-    const origHtml = detailPanel.innerHTML;
     detailPanel.innerHTML = '<div class="text-center p-4">GenAI is writing announcements...</div>';
 
     const apiKey = sessionStorage.getItem('stadiumos_api_key');
