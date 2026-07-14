@@ -17,18 +17,9 @@ const MAP_NODES = {
 };
 
 /**
- * Draws the complete stadium map on the canvas based on toggles
+ * Helper to draw the canvas background grid
  */
-function drawNavigationMap() {
-    const canvas = document.getElementById('stadium-map-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw Background Grid
+function drawBackgroundGrid(ctx, canvas) {
     ctx.strokeStyle = 'hsla(220, 10%, 25%, 0.3)';
     ctx.lineWidth = 1;
     for (let i = 0; i < canvas.width; i += 40) {
@@ -43,8 +34,12 @@ function drawNavigationMap() {
         ctx.lineTo(canvas.width, j);
         ctx.stroke();
     }
+}
 
-    // 1. Draw Field (Green center rectangle)
+/**
+ * Helper to draw the center playing field
+ */
+function drawStadiumField(ctx) {
     ctx.fillStyle = 'hsla(150, 75%, 20%, 0.4)';
     ctx.strokeStyle = 'hsl(150, 75%, 45%)';
     ctx.lineWidth = 3;
@@ -63,8 +58,12 @@ function drawNavigationMap() {
     ctx.beginPath();
     ctx.arc(300, 200, 30, 0, 2 * Math.PI);
     ctx.stroke();
+}
 
-    // 2. Draw Stands (Concentric rounded rings)
+/**
+ * Helper to draw stands layout rings
+ */
+function drawStadiumStands(ctx) {
     ctx.strokeStyle = 'hsla(220, 10%, 40%, 0.6)';
     ctx.lineWidth = 15;
     ctx.beginPath();
@@ -76,12 +75,12 @@ function drawNavigationMap() {
     ctx.beginPath();
     ctx.arc(300, 200, 110, 0, 2 * Math.PI);
     ctx.stroke();
+}
 
-    // 3. Highlight Special Zones
-    const isVipToggled = document.getElementById('nav-vip-toggle')?.checked;
-    const isMediaToggled = document.getElementById('nav-media-toggle')?.checked;
-    const isAccessToggled = document.getElementById('nav-accessible-toggle')?.checked;
-
+/**
+ * Highlights restricted VIP, Media, and step-free access paths
+ */
+function highlightSpecialZones(ctx, isVipToggled, isMediaToggled, isAccessToggled) {
     if (isVipToggled) {
         ctx.fillStyle = 'rgba(250, 204, 21, 0.15)';
         ctx.strokeStyle = 'hsl(45, 95%, 55%)';
@@ -114,8 +113,12 @@ function drawNavigationMap() {
         ctx.stroke();
         ctx.setLineDash([]); // Reset
     }
+}
 
-    // 4. Draw Nodes
+/**
+ * Draws coordinate nodes onto map layout
+ */
+function drawMapNodes(ctx) {
     Object.keys(MAP_NODES).forEach(name => {
         const node = MAP_NODES[name];
         ctx.fillStyle = 'hsl(220, 10%, 93%)';
@@ -127,8 +130,34 @@ function drawNavigationMap() {
         ctx.font = '10px Outfit';
         ctx.fillText(name, node.x - 25, node.y - 12);
     });
+}
 
-    // 5. Compute and Draw Route Path
+/**
+ * Draws the complete stadium map on the canvas based on toggles
+ */
+function drawNavigationMap() {
+    const canvas = document.getElementById('stadium-map-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw grid and base layout
+    drawBackgroundGrid(ctx, canvas);
+    drawStadiumField(ctx);
+    drawStadiumStands(ctx);
+
+    // Highlight toggle states
+    const isVipToggled = document.getElementById('nav-vip-toggle')?.checked;
+    const isMediaToggled = document.getElementById('nav-media-toggle')?.checked;
+    const isAccessToggled = document.getElementById('nav-accessible-toggle')?.checked;
+
+    highlightSpecialZones(ctx, isVipToggled, isMediaToggled, isAccessToggled);
+    drawMapNodes(ctx);
+
+    // Compute and Draw Route Path
     calculateRoute(ctx, isVipToggled, isMediaToggled, isAccessToggled);
 }
 

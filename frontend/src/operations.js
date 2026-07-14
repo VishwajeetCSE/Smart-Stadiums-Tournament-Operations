@@ -156,7 +156,7 @@ async function generateEmergencyBroadcast(id) {
     // Loading overlay
     detailPanel.innerHTML = '<div class="text-center p-4">GenAI is writing announcements...</div>';
 
-    const apiKey = sessionStorage.getItem('stadiumos_api_key');
+    const apiKey = window.getApiKey();
     
     if (apiKey) {
         try {

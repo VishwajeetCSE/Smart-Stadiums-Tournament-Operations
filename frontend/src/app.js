@@ -169,9 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply initial accessibility styling
     updateAccessibilityPrefs();
 
-    // Trigger initial rendering
-    updateDigitalTwinDOM();
-    refreshDigitalTwin();
+    // Trigger initial match phase rendering (initializes AI banners and telemetry)
+    window.changeMatchPhase('Pre-Match');
     
     // Launch Clock Loops
     runLiveClock();

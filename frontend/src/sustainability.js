@@ -48,7 +48,7 @@ async function generateEcoRecommendations() {
 
     adviceBox.textContent = 'AI sustainability copilot is calculating environmental metrics...';
 
-    const apiKey = sessionStorage.getItem('stadiumos_api_key');
+    const apiKey = window.getApiKey();
     const sus = window.appState.telemetry.sustainability;
 
     if (apiKey) {
