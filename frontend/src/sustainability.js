@@ -74,15 +74,24 @@ Provide 3 brief, actionable operational recommendations to increase energy effic
 }
 
 /**
- * Fallback local operational logic for Eco-Stadia advice
+ * Fallback local operational logic for Eco-Stadia advice driven by LIVE STATE metrics
+ * @param {HTMLElement} element - The DOM element to render the advice into.
  */
 function generateLocalEcoAdvice(element) {
-    const advice = `
-*   **Energy Optimization:** Battery storage reserves are at 92%. Peak cooling loads in corridors should be set to 24°C to save 12% HVAC consumption.
-*   **Water Management:** Redirect concession area graywater reserves to flush Sector 100 toilets, saving 4,000 Liters of fresh utility water.
-*   **Waste Sorting:** Concession waste audit shows high plastic cardboards. Recommend shifting next volunteers shift to help fan recycling centers near Gate B.
-    `;
-    element.innerHTML = advice;
+    const sus = window.appState.telemetry.sustainability;
+    let advice = '';
+
+    if (window.appState.matchPhase === 'Evacuation') {
+        advice = '🚨 **CRITICAL OVERRIDE:** Evacuation in progress. All non-essential HVAC and lighting have been disabled. Backup power routed strictly to emergency exits.';
+    } else if (sus.solarOutput < 100) {
+        advice = `⚠️ **ENERGY DEFICIT:** Solar output is low (${sus.solarOutput} kW). **AI Action:** Peak cooling loads in corridors should be set to 24°C to save 12% HVAC consumption and prevent grid strain.`;
+    } else if (sus.wasteDiverted < 60) {
+        advice = `♻️ **WASTE WARNING:** Diversion rate is dropping (${sus.wasteDiverted}%). **AI Action:** Concession waste audit shows high plastic cardboards. Recommend shifting next volunteers shift to help fan recycling centers near Gate B.`;
+    } else {
+        advice = `✅ **ECO OPTIMAL:** Solar output (${sus.solarOutput} kW) and recycling loops are exceeding targets. **AI Action:** Redirect concession area graywater reserves to flush Sector 100 toilets, saving 4,000 Liters of fresh utility water.`;
+    }
+    
+    element.innerHTML = advice.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     logSecurityEvent('Offline Eco Analysis Run', window.appState.userRole, 'SUCCESS');
 }
 

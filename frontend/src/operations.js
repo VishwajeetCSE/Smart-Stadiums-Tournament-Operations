@@ -3,6 +3,9 @@
  * Processes logs, triages emergencies, and generates multilingual broadcasts using GenAI.
  */
 
+/**
+ * Refreshes the DOM table displaying active incidents.
+ */
 function updateIncidentsDOM() {
     const tableBody = document.getElementById('incidents-table-body');
     if (!tableBody) return;
@@ -239,7 +242,7 @@ function closeIncidentModal() {
 }
 
 /**
- * Submit modal incident
+ * Submits a new incident from the modal to the state, with security validation.
  */
 function submitNewIncident() {
     const type = document.getElementById('modal-incident-type').value;
@@ -289,7 +292,6 @@ window.updateIncidentsDOM = updateIncidentsDOM;
 window.updateSecurityLogsDOM = updateSecurityLogsDOM;
 window.clearSecurityLogs = clearSecurityLogs;
 window.inspectIncident = inspectIncident;
-window.resolveActiveIncident = resolveActiveIncident;
 window.resolveActiveIncident = resolveActiveIncident;
 window.openIncidentModal = openIncidentModal;
 window.closeIncidentModal = closeIncidentModal;

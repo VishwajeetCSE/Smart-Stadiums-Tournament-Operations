@@ -101,7 +101,6 @@ Provide a 2-3 sentence strategic operations summary. Spot congestion, recommend 
             logSecurityEvent('AI Digital Twin Telemetry Refreshed', window.appState.userRole, 'SUCCESS');
         } catch (e) {
             console.error(e);
-            explanationBubble.textContent = `AI analysis failed: ${e.message}. Falling back to offline telemetry advisor.`;
             generateLocalTwinExplanation(explanationBubble);
         }
     } else {
@@ -110,22 +109,27 @@ Provide a 2-3 sentence strategic operations summary. Spot congestion, recommend 
 }
 
 /**
- * Fallback local explainer logic for Digital Twin
+ * Fallback local explainer logic for Digital Twin driven by LIVE STATE metrics
+ * Replaces static strings with dynamic heuristics based on current occupancy and queues.
+ * @param {HTMLElement} element - The DOM element to render the explanation into.
  */
 function generateLocalTwinExplanation(element) {
-    const phase = window.appState.matchPhase || 'Pre-Match';
+    const gates = window.appState.telemetry.gates;
+    const congestedGates = gates.filter(g => (g.currentOccupancy / g.capacity) > 0.85);
+    const heavyQueues = window.appState.telemetry.concessions.filter(c => c.queueTime > 15);
+    
     let alertMsg = '';
-
-    if (phase === 'Pre-Match') {
-        alertMsg = '⚠️ **CONGESTION WARNING:** **Gate A and Gate B** have spiked to over 90% ingress flow due to pre-match fan arrivals. **AI Action:** Direct Gate A arrivals to Gate C (currently only 40% flow capacity) to equalize load and reduce average queue wait by 12 minutes. Deploy 4 volunteer stewards to Metro transit loops to speed up ticketing checks.';
-    } else if (phase === 'Mid-Match') {
-        alertMsg = '🍕 **CONCESSION SURGE:** Main gates are clear, but **Food Court B** queue wait times have surged to 28 minutes due to halftime concession runs. **AI Action:** Activate secondary mobile concession carts near Sector 108 to redirect traffic. Reroute 3 crowd supervisors to Food Court B to organize line barriers and keep passageways clear.';
-    } else if (phase === 'Post-Match') {
-        alertMsg = '🚍 **EGRESS PEAK:** All exit gates are experiencing heavy egress loads (1,400+ occupancy each) as fans depart. **AI Action:** Command Metro links and standby express shuttles to run continuously on loop. Reroute VIP exit flow to North Corridor loops to ease congestion at Gate A exits.';
-    } else if (phase === 'Evacuation') {
+    
+    if (window.appState.matchPhase === 'Evacuation') {
         alertMsg = '🚨 **CRITICAL EVACUATION DETECTED:** Emergency phase active. All gates marked as Emergency. **AI Action:** Immediately activate all emergency safety lights and open all crash gates. Direct all 90+ safety crew members to exit nodes. Bypass all concession zones to avoid stampedes.';
+    } else if (congestedGates.length > 0) {
+        const gateNames = congestedGates.map(g => g.id).join(' and ');
+        alertMsg = `⚠️ **CONGESTION WARNING:** **${gateNames}** are experiencing over 85% capacity loads. **AI Action:** Direct fan flow to underutilized entrances. Deploy 4 volunteer stewards to Metro transit loops near ${gateNames} to speed up ticketing checks and ease pressure.`;
+    } else if (heavyQueues.length > 0) {
+        const queueNames = heavyQueues.map(c => c.id).join(' and ');
+        alertMsg = `🍕 **CONCESSION SURGE:** **${queueNames}** wait times have exceeded 15 minutes. **AI Action:** Activate secondary mobile concession carts near these zones to redirect traffic. Reroute crowd supervisors to organize line barriers and keep passageways clear.`;
     } else {
-        alertMsg = 'All stadium systems are stable. Fan entrances are flowing smoothly.';
+        alertMsg = '✅ **SYSTEMS NOMINAL:** All stadium entrance flow and concession queues are stable. Fan experience metrics are within optimal ranges.';
     }
     
     // Render with basic markdown bold support
@@ -203,10 +207,10 @@ function changeMatchPhase(phase) {
                 location: 'Entire Arena',
                 severity: 'Critical',
                 priority: 'High',
-                assignedVolunteers: 'All Available Crew (90+ Members)',
+                assignedVolunteers: 'All Available Crew',
                 status: 'In Progress',
                 timeline: `${new Date().toLocaleTimeString()} Evacuation phase simulated.`,
-                suggestedResponse: 'Open all gates, trigger safety sirens, broadcast multilingual evacuation safety alerts immediately.',
+                suggestedResponse: 'Open all gates, trigger safety sirens, broadcast evacuation alerts.',
                 estimatedRecovery: '2 Hours',
                 finalReport: null
             };
@@ -214,8 +218,18 @@ function changeMatchPhase(phase) {
             logSecurityEvent('Critical Evacuation Incident Logged', 'SYSTEM', 'WARNING');
         }
 
-        transitRecommendation = 'EMERGENCY EVACUATION: Open all gates. Command all shuttles and Metro links to run on continuous rescue loops.';
         sustainabilityRecommendation = 'EMERGENCY PROTOCOL: Shutdown all non-essential concessions power grid. Direct emergency backup generator power strictly to safety lighting and sirens.';
+    }
+
+    // Dynamic Transit Recommendation based on State
+    const congested = telemetry.gates.filter(g => (g.currentOccupancy / g.capacity) > 0.85);
+    if (phase === 'Evacuation') {
+        transitRecommendation = 'EMERGENCY EVACUATION: Open all gates. Command all shuttles and Metro links to run on continuous rescue loops.';
+    } else if (congested.length > 0) {
+        const gateNames = congested.map(g => g.id).join(' and ');
+        transitRecommendation = `${gateNames} is operating over 85% capacity. Reroute arriving shuttles to alternative entrances immediately.`;
+    } else {
+        transitRecommendation = 'Gate flow and transit sensors are stable. No immediate rerouting required.';
     }
 
     logSecurityEvent(`Match phase changed to: ${phase}`, window.appState.userRole, 'SUCCESS');
@@ -231,8 +245,9 @@ function changeMatchPhase(phase) {
     updateQueuesDOM();
     updateTransportDOM();
     
-    // Trigger AI Digital Twin explanation
-    refreshDigitalTwin();
+    // Trigger AI Digital Twin & Eco explanations immediately to avoid empty states
+    if (window.refreshDigitalTwin) window.refreshDigitalTwin();
+    if (window.generateEcoRecommendations) window.generateEcoRecommendations();
 }
 
 // Exports

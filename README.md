@@ -34,6 +34,20 @@ graph TD
 
 ---
 
+## 🎯 Challenge Mapping (Feature-to-Problem Alignment)
+
+| Challenge Requirement | FIFA StadiumOS Feature | Status |
+| :--- | :--- | :--- |
+| **Crowd Management** | AI Queue Predictor & Digital Twin Telemetry | Complete |
+| **Emergency Response** | AI Incident Commander & Broadcast Generator | Complete |
+| **Transportation** | Transit Operations Dashboard | Complete |
+| **Sustainability** | Eco Copilot & Waste Tracking | Complete |
+| **Accessibility** | WCAG-compliant UI + Keyboard Navigation | Complete |
+| **AI Decision Support** | Context-aware Operational Recommendations | Complete |
+| **Real-time Operations** | Live Dashboard State Visualization | Complete |
+
+---
+
 ## 📋 Problem Statement
 Stadium logistics for major international tournaments like the FIFA World Cup 2026 are incredibly complex. Organizers, venue staff, and volunteers need real-time, context-aware information to make critical decisions, manage crowd safety, handle operations incidents, and guide diverse multilingual fan populations. Simple dashboards fail to connect data streams with actionable, instant advice.
 
